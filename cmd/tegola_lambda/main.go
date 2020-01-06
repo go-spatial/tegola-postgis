@@ -11,11 +11,11 @@ import (
 	"github.com/dimfeld/httptreemux"
 
 	"github.com/go-spatial/geom/encoding/mvt"
-	"github.com/go-spatial/tegola/atlas"
-	"github.com/go-spatial/tegola/cmd/internal/register"
-	"github.com/go-spatial/tegola/config"
-	"github.com/go-spatial/tegola/dict"
-	"github.com/go-spatial/tegola/server"
+	"github.com/go-spatial/tegola-postgres/atlas"
+	"github.com/go-spatial/tegola-postgres/cmd/internal/register"
+	"github.com/go-spatial/tegola-postgres/config"
+	"github.com/go-spatial/tegola-postgres/dict"
+	"github.com/go-spatial/tegola-postgres/server"
 )
 
 var (

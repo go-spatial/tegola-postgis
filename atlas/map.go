@@ -23,11 +23,11 @@ import (
 	"github.com/go-spatial/geom/planar/makevalid/hitmap"
 	"github.com/go-spatial/geom/planar/simplify"
 	"github.com/go-spatial/geom/slippy"
-	"github.com/go-spatial/tegola"
-	"github.com/go-spatial/tegola/dict"
-	"github.com/go-spatial/tegola/proj"
-	"github.com/go-spatial/tegola/provider"
-	"github.com/go-spatial/tegola/provider/debug"
+	tegola "github.com/go-spatial/tegola-postgres"
+	"github.com/go-spatial/tegola-postgres/dict"
+	"github.com/go-spatial/tegola-postgres/proj"
+	"github.com/go-spatial/tegola-postgres/provider"
+	"github.com/go-spatial/tegola-postgres/provider/debug"
 )
 
 // NewMap creates a new map with the necessary default values
@@ -67,10 +67,6 @@ type Map struct {
 
 // AddDebugLayers returns a copy of a Map with the debug layers appended to the layer list
 func (m Map) AddDebugLayers() Map {
-	// mvtMaps can not add or remove layers
-	if m.mvtMap {
-		return
-	}
 	// make an explicit copy of the layers
 	layers := make([]Layer, len(m.Layers))
 	copy(layers, m.Layers)

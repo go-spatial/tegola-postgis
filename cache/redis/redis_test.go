@@ -7,10 +7,10 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/go-spatial/tegola/cache"
-	"github.com/go-spatial/tegola/cache/redis"
-	"github.com/go-spatial/tegola/dict"
-	"github.com/go-spatial/tegola/internal/ttools"
+	"github.com/go-spatial/tegola-postgres/cache"
+	"github.com/go-spatial/tegola-postgres/cache/redis"
+	"github.com/go-spatial/tegola-postgres/dict"
+	"github.com/go-spatial/tegola-postgres/internal/ttools"
 )
 
 // TESTENV is the environment variable that must be set to "yes" to run the redis tests.

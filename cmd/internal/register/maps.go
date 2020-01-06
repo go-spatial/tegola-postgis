@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/tegola"
-	"github.com/go-spatial/tegola/atlas"
-	"github.com/go-spatial/tegola/config"
-	"github.com/go-spatial/tegola/provider"
+	tegola "github.com/go-spatial/tegola-postgres"
+	"github.com/go-spatial/tegola-postgres/atlas"
+	"github.com/go-spatial/tegola-postgres/config"
+	"github.com/go-spatial/tegola-postgres/provider"
 )
 
 type ErrProviderLayerInvalid struct {

@@ -5,7 +5,7 @@ import (
 	"math"
 
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/tegola/proj/webmercator"
+	"github.com/go-spatial/tegola-postgres/proj/webmercator"
 )
 
 var (

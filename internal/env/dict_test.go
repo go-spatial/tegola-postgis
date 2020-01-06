@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/go-spatial/tegola/internal/env"
+	"github.com/go-spatial/tegola-postgres/internal/env"
 )
 
 func TestDict(t *testing.T) {

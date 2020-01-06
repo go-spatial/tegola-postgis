@@ -3,8 +3,8 @@ package register_test
 import (
 	"testing"
 
-	"github.com/go-spatial/tegola/cmd/internal/register"
-	"github.com/go-spatial/tegola/dict"
+	"github.com/go-spatial/tegola-postgres/cmd/internal/register"
+	"github.com/go-spatial/tegola-postgres/dict"
 )
 
 func TestCaches(t *testing.T) {

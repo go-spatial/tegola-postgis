@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-spatial/tegola/cache"
-	"github.com/go-spatial/tegola/cache/s3"
-	"github.com/go-spatial/tegola/dict"
+	"github.com/go-spatial/tegola-postgres/cache"
+	"github.com/go-spatial/tegola-postgres/cache/s3"
+	"github.com/go-spatial/tegola-postgres/dict"
 )
 
 // gzip encoded test data

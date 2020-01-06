@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/go-spatial/tegola/cache/memory"
-	"github.com/go-spatial/tegola/server"
+	"github.com/go-spatial/tegola-postgres/cache/memory"
+	"github.com/go-spatial/tegola-postgres/server"
 )
 
 func TestMiddlewareHeaders(t *testing.T) {

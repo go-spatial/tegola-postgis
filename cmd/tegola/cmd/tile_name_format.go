@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-spatial/tegola"
-	"github.com/go-spatial/tegola/maths"
+	tegola "github.com/go-spatial/tegola-postgres"
+	"github.com/go-spatial/tegola-postgres/maths"
 )
 
 type Format struct {

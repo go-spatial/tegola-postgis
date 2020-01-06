@@ -6,9 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/go-spatial/tegola"
-	"github.com/go-spatial/tegola/cache"
-	"github.com/go-spatial/tegola/dict"
+	tegola "github.com/go-spatial/tegola-postgres"
+	"github.com/go-spatial/tegola-postgres/cache"
+	"github.com/go-spatial/tegola-postgres/dict"
 )
 
 var (

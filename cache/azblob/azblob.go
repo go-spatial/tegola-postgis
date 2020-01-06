@@ -12,8 +12,8 @@ import (
 	"github.com/Azure/azure-storage-blob-go/2017-07-29/azblob"
 
 	"github.com/go-spatial/tegola"
-	"github.com/go-spatial/tegola/cache"
-	"github.com/go-spatial/tegola/dict"
+	"github.com/go-spatial/tegola-postgres/cache"
+	"github.com/go-spatial/tegola-postgres/dict"
 )
 
 const CacheType = "azblob"

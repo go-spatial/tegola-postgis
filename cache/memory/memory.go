@@ -3,8 +3,8 @@ package memory
 import (
 	"sync"
 
-	"github.com/go-spatial/tegola/cache"
-	"github.com/go-spatial/tegola/dict"
+	"github.com/go-spatial/tegola-postgres/cache"
+	"github.com/go-spatial/tegola-postgres/dict"
 )
 
 const CacheType  = "memory"

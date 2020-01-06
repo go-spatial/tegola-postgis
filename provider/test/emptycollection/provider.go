@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/tegola/proj"
-	"github.com/go-spatial/tegola/provider"
+	"github.com/go-spatial/tegola-postgres/proj"
+	"github.com/go-spatial/tegola-postgres/provider"
 
-	"github.com/go-spatial/tegola/dict"
+	"github.com/go-spatial/tegola-postgres/dict"
 )
 
 const Name = "emptycollection"

@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-	"github.com/go-spatial/tegola"
-	"github.com/go-spatial/tegola/cache"
-	"github.com/go-spatial/tegola/dict"
+	tegola "github.com/go-spatial/tegola-postgres"
+	"github.com/go-spatial/tegola-postgres/cache"
+	"github.com/go-spatial/tegola-postgres/dict"
 )
 
 const CacheType = "redis"

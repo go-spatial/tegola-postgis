@@ -3,9 +3,9 @@ package mvtprovider
 import (
 	"context"
 
-	"github.com/go-spatial/tegola/dict"
-	"github.com/go-spatial/tegola/internal/log"
-	"github.com/go-spatial/tegola/provider"
+	"github.com/go-spatial/tegola-postgres/dict"
+	"github.com/go-spatial/tegola-postgres/internal/log"
+	"github.com/go-spatial/tegola-postgres/provider"
 )
 
 const NamePrefix = "mvt_"

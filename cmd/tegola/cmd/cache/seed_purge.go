@@ -8,12 +8,12 @@ import (
 
 	"github.com/go-spatial/cobra"
 	"github.com/go-spatial/geom/slippy"
-	"github.com/go-spatial/tegola/atlas"
-	"github.com/go-spatial/tegola/internal/log"
-	"github.com/go-spatial/tegola/maths"
-	"github.com/go-spatial/tegola/provider"
+	"github.com/go-spatial/tegola-postgres/atlas"
+	"github.com/go-spatial/tegola-postgres/internal/log"
+	"github.com/go-spatial/tegola-postgres/maths"
+	"github.com/go-spatial/tegola-postgres/provider"
 
-	gdcmd "github.com/go-spatial/tegola/internal/cmd"
+	gdcmd "github.com/go-spatial/tegola-postgres/internal/cmd"
 )
 
 const defaultUsage = `Usage:{{if .Runnable}}
