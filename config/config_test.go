@@ -181,7 +181,7 @@ func TestParse(t *testing.T) {
 								MinZoom:       env.UintPtr(10),
 								MaxZoom:       env.UintPtr(20),
 								DontSimplify:  true,
-								DontClip:  true,
+								DontClip:      true,
 							},
 						},
 					},
@@ -415,9 +415,9 @@ func TestValidate(t *testing.T) {
 					},
 				},
 			},
-			expectedErr: config.ErrOverlappingLayerZooms{
-				ProviderLayer1: "provider1.water",
-				ProviderLayer2: "provider2.water",
+			expectedErr: config.ErrMVTDiffereProviders{
+				Original: "provider1",
+				Current:  "provider2",
 			},
 		},
 		"2": {
@@ -481,9 +481,9 @@ func TestValidate(t *testing.T) {
 					},
 				},
 			},
-			expectedErr: config.ErrOverlappingLayerZooms{
-				ProviderLayer1: "provider1.water_0_5",
-				ProviderLayer2: "provider2.water_5_10",
+			expectedErr: config.ErrMVTDiffereProviders{
+				Original: "provider1",
+				Current:  "provider2",
 			},
 		},
 		"3": {
@@ -567,7 +567,10 @@ func TestValidate(t *testing.T) {
 					},
 				},
 			},
-			expectedErr: nil,
+			expectedErr: config.ErrMVTDiffereProviders{
+				Original: "provider1",
+				Current:  "provider2",
+			},
 		},
 		"4 default zooms": {
 			config: config.Config{
@@ -697,9 +700,9 @@ func TestValidate(t *testing.T) {
 					},
 				},
 			},
-			expectedErr: config.ErrOverlappingLayerZooms{
-				ProviderLayer1: "provider1.water_default_z",
-				ProviderLayer2: "provider2.water_default_z",
+			expectedErr: config.ErrMVTDiffereProviders{
+				Original: "provider1",
+				Current:  "provider2",
 			},
 		},
 		"6 blocked headers": {

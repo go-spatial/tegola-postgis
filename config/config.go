@@ -28,8 +28,9 @@ type Config struct {
 	Webserver    Webserver `toml:"webserver"`
 	Cache        env.Dict  `toml:"cache"`
 	// Map of providers.
-	Providers []env.Dict
-	Maps      []Map
+	Providers    []env.Dict `toml:"providers"`
+	MVTProviders []env.Dict `toml:"mvt_providers`
+	Maps         []Map      `toml:"maps"`
 }
 
 type Webserver struct {
@@ -37,8 +38,8 @@ type Webserver struct {
 	Port      env.String `toml:"port"`
 	URIPrefix env.String `toml:"uri_prefix"`
 	Headers   env.Dict   `toml:"headers"`
-	SSLCert env.String `toml:"ssl_cert"`
-	SSLKey env.String `toml:"ssl_key"`
+	SSLCert   env.String `toml:"ssl_cert"`
+	SSLKey    env.String `toml:"ssl_key"`
 }
 
 // A Map represents a map in the Tegola Config file.
@@ -67,18 +68,24 @@ type MapLayer struct {
 	DontClip env.Bool `toml:"dont_clip"`
 }
 
+func (ml MapLayer) GetProviderLayerName() (string, string, error) {
+	// split the provider layer (syntax is provider.layer)
+	plParts := strings.Split(string(ml.ProviderLayer), ".")
+	if len(plParts) != 2 {
+		return "", "", ErrInvalidProviderLayerName{ProviderLayerName: string(ml.ProviderLayer)}
+	}
+
+	return plParts[0], plParts[1], nil
+}
+
 // GetName helper to get the name we care about.
 func (ml MapLayer) GetName() (string, error) {
 	if ml.Name != "" {
 		return string(ml.Name), nil
 	}
-	// split the provider layer (syntax is provider.layer)
-	plParts := strings.Split(string(ml.ProviderLayer), ".")
-	if len(plParts) != 2 {
-		return "", ErrInvalidProviderLayerName{ProviderLayerName: string(ml.ProviderLayer)}
-	}
 
-	return plParts[1], nil
+	_, name, err := ml.GetProviderLayerName()
+	return name, err
 }
 
 // checks the config for issues
@@ -92,7 +99,24 @@ func (c *Config) Validate() error {
 			mapLayers[string(m.Name)] = map[string]MapLayer{}
 		}
 
+		// for mvt_providers we can only have the same provider for
+		// all layers
+		provider := ""
+
 		for layerKey, l := range m.Layers {
+			pname, _, err := l.GetProviderLayerName()
+			if err != nil {
+				return err
+			}
+			if provider == "" {
+				provider = pname
+			} else if pname != provider {
+				return ErrMVTDiffereProviders{
+					Original: provider,
+					Current:  pname,
+				}
+			}
+
 			name, err := l.GetName()
 			if err != nil {
 				return err

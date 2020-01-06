@@ -46,7 +46,7 @@ func NewWebMercatorMap(name string) Map {
 type Map struct {
 	Name string
 	// Contains an attribution to be displayed when the map is shown to a user),
-	// 	This string is sanatized so it can't be abused as a vector for XSS or beacon tracking.
+	// 	This string is sanitized so it can't be abused as a vector for XSS or beacon tracking.
 	Attribution string
 	// The maximum extent of available map tiles in WGS:84
 	// latitude and longitude values, in the order left, bottom, right, top.
@@ -61,10 +61,16 @@ type Map struct {
 	// MVT output values
 	TileExtent uint64
 	TileBuffer uint64
+
+	mvtProvider bool
 }
 
 // AddDebugLayers returns a copy of a Map with the debug layers appended to the layer list
 func (m Map) AddDebugLayers() Map {
+	// mvtMaps can not add or remove layers
+	if m.mvtMap {
+		return
+	}
 	// make an explicit copy of the layers
 	layers := make([]Layer, len(m.Layers))
 	copy(layers, m.Layers)

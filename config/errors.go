@@ -27,6 +27,19 @@ func (e ErrOverlappingLayerZooms) Error() string {
 	return fmt.Sprintf("config: overlapping zooms for layer (%v) and layer (%v)", e.ProviderLayer1, e.ProviderLayer2)
 }
 
+type ErrMVTDiffereProviders struct {
+	Original string
+	Current  string
+}
+
+func (e ErrMVTDiffereProviders) Error() string {
+	return fmt.Sprintf(
+		"config: all layer providers need to be the same, first provider is %s second provider is %s",
+		e.Original,
+		e.Current,
+	)
+}
+
 type ErrInvalidLayerZoom struct {
 	ProviderLayer string
 	MinZoom       bool
