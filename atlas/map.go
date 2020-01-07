@@ -328,6 +328,9 @@ func (m Map) encode(ctx context.Context, tile *slippy.Tile) ([]byte, error) {
 // TODO (arolek): support for max zoom
 func (m Map) Encode(ctx context.Context, tile *slippy.Tile) ([]byte, error) {
 	tileBytes, err := m.encode(ctx, tile)
+	if err != nil {
+		return nil, err
+	}
 	// buffer to store our compressed bytes
 	var gzipBuf bytes.Buffer
 

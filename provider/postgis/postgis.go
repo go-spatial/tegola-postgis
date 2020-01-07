@@ -661,6 +661,7 @@ func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers [
 	err := p.pool.QueryRow(finalSQL.String()).Scan(&data)
 	// data may have garbage in it.
 	if err != nil {
+		log.Printf("got err: %v", err)
 		return []byte{}, err
 	}
 	log.Printf("got %v bytes back status: %v", len(data.Bytes), data.Status)
