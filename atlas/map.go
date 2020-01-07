@@ -151,8 +151,7 @@ func (m Map) FilterLayersByName(names ...string) Map {
 	return m
 }
 
-// TODO (arolek): support for max zoom
-func (m Map) Encode(ctx context.Context, tile *slippy.Tile) ([]byte, error) {
+func (m Map) encode(ctx context.Context, tile *slippy.Tile) ([]byte, error) {
 	if m.mvtProvider != nil {
 		// get the list of our layers
 		ptile := provider.NewTile(tile.Z, tile.X, tile.Y,
@@ -162,6 +161,7 @@ func (m Map) Encode(ctx context.Context, tile *slippy.Tile) ([]byte, error) {
 		for i := range m.Layers {
 			layerNames = append(layerNames, m.Layers[i].MVTName())
 		}
+
 		return m.mvtProvider.MVTForLayers(ctx, ptile, layerNames)
 	}
 
@@ -322,11 +322,12 @@ func (m Map) Encode(ctx context.Context, tile *slippy.Tile) ([]byte, error) {
 	}
 
 	// encode our mvt tile
-	tileBytes, err := proto.Marshal(vtile)
-	if err != nil {
-		return nil, err
-	}
+	return proto.Marshal(vtile)
+}
 
+// TODO (arolek): support for max zoom
+func (m Map) Encode(ctx context.Context, tile *slippy.Tile) ([]byte, error) {
+	tileBytes, err := m.encode(ctx, tile)
 	// buffer to store our compressed bytes
 	var gzipBuf bytes.Buffer
 
