@@ -14,7 +14,7 @@ type Tiler interface {
 	provider.Layerer
 
 	// MVTForLayers will return a MVT byte array or an error for the given layer names.
-	MVTForLayers(ctx context.Context, layers []string) ([]byte, error)
+	MVTForLayers(ctx context.Context, tile provider.Tile, layers []string) ([]byte, error)
 }
 
 // InitFunc initialize a provider given a config map. The init function should validate the config map, and report any errors. This is called by the For function.
@@ -33,7 +33,6 @@ var providers map[string]pfns
 // Register the provider with the system. This call is generally made in the init functions of the provider.
 // 	the clean up function will be called during shutdown of the provider to allow the provider to do any cleanup.
 func Register(name string, init InitFunc, cleanup CleanupFunc) error {
-	name = NamePrefix + name
 	if providers == nil {
 		providers = make(map[string]pfns)
 	}
@@ -65,7 +64,6 @@ func Drivers() (l []string) {
 
 // For function returns a configured provider of the given type, provided the correct config map.
 func For(name string, config dict.Dicter) (Tiler, error) {
-	name = NamePrefix + name
 	if providers == nil {
 		return nil, provider.ErrUnknownProvider{}
 	}

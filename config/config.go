@@ -29,7 +29,7 @@ type Config struct {
 	Cache        env.Dict  `toml:"cache"`
 	// Map of providers.
 	Providers    []env.Dict `toml:"providers"`
-	MVTProviders []env.Dict `toml:"mvt_providers`
+	MVTProviders []env.Dict `toml:"mvtproviders`
 	Maps         []Map      `toml:"maps"`
 }
 

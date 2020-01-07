@@ -3,12 +3,12 @@ package register
 import (
 	"fmt"
 	"html"
-	"strings"
 
 	"github.com/go-spatial/geom"
 	tegola "github.com/go-spatial/tegola-postgres"
 	"github.com/go-spatial/tegola-postgres/atlas"
 	"github.com/go-spatial/tegola-postgres/config"
+	"github.com/go-spatial/tegola-postgres/mvtprovider"
 	"github.com/go-spatial/tegola-postgres/provider"
 )
 
@@ -55,8 +55,76 @@ func (e ErrDefaultTagsInvalid) Error() string {
 	return fmt.Sprintf("'default_tags' for 'provider_layer' (%v) should be a TOML table", e.ProviderLayer)
 }
 
+func initLayer(l *config.MapLayer, mname string, lprovider provider.Layerer) (atlas.Layer, error) {
+	// read the provider's layer names
+	pname, lname, _ := l.GetProviderLayerName()
+	layerInfos, err := lprovider.Layers()
+	if err != nil {
+		return atlas.Layer{}, ErrFetchingLayerInfo{
+			Provider: pname,
+		}
+	}
+	providerLayer := string(l.ProviderLayer)
+
+	// confirm our providerLayer name is registered
+	var found bool
+	var layerGeomType geom.Geometry
+	for i := range layerInfos {
+		if layerInfos[i].Name() == lname {
+			found = true
+
+			// read the layerGeomType
+			layerGeomType = layerInfos[i].GeomType()
+			break
+		}
+	}
+	if !found {
+		return atlas.Layer{}, ErrProviderLayerNotRegistered{
+			MapName:       mname,
+			ProviderLayer: providerLayer,
+			Provider:      pname,
+		}
+	}
+
+	var defaultTags map[string]interface{}
+	if l.DefaultTags != nil {
+		var ok bool
+		defaultTags, ok = l.DefaultTags.(map[string]interface{})
+		if !ok {
+			return atlas.Layer{}, ErrDefaultTagsInvalid{
+				ProviderLayer: providerLayer,
+			}
+		}
+	}
+
+	var minZoom uint
+	if l.MinZoom != nil {
+		minZoom = uint(*l.MinZoom)
+	}
+
+	var maxZoom uint
+	if l.MaxZoom != nil {
+		maxZoom = uint(*l.MaxZoom)
+	}
+
+	prvd, _ := lprovider.(provider.Tiler)
+
+	// add our layer to our layers slice
+	return atlas.Layer{
+		Name:              string(l.Name),
+		ProviderLayerName: lname,
+		MinZoom:           minZoom,
+		MaxZoom:           maxZoom,
+		Provider:          prvd,
+		DefaultTags:       defaultTags,
+		GeomType:          layerGeomType,
+		DontSimplify:      bool(l.DontSimplify),
+		DontClip:          bool(l.DontClip),
+	}, nil
+}
+
 // Maps registers maps with with atlas
-func Maps(a *atlas.Atlas, maps []config.Map, providers map[string]provider.Tiler) error {
+func Maps(a *atlas.Atlas, maps []config.Map, providers map[string]provider.Tiler, mvtProviders map[string]mvtprovider.Tiler) error {
 
 	// iterate our maps
 	for _, m := range maps {
@@ -87,85 +155,51 @@ func Maps(a *atlas.Atlas, maps []config.Map, providers map[string]provider.Tiler
 		// iterate our layers
 		for _, l := range m.Layers {
 			// split our provider name (provider.layer) into [provider,layer]
-			providerLayer := strings.Split(string(l.ProviderLayer), ".")
-
-			// we're expecting two params in the provider layer definition
-			if len(providerLayer) != 2 {
-				return ErrProviderLayerInvalid{
-					ProviderLayer: string(l.ProviderLayer),
-					Map:           string(m.Name),
-				}
-			}
-
-			// lookup our proivder
-			provider, ok := providers[providerLayer[0]]
-			if !ok {
-				return ErrProviderNotFound{providerLayer[0]}
-			}
-
-			// read the provider's layer names
-			layerInfos, err := provider.Layers()
+			providerName, _, err := l.GetProviderLayerName()
 			if err != nil {
-				return ErrFetchingLayerInfo{
-					Provider: providerLayer[0],
-				}
+				return err
 			}
 
-			// confirm our providerLayer name is registered
-			var found bool
-			var layerGeomType geom.Geometry
-			for i := range layerInfos {
-				if layerInfos[i].Name() == providerLayer[1] {
-					found = true
+			var layerer provider.Layerer
 
-					// read the layerGeomType
-					layerGeomType = layerInfos[i].GeomType()
-					break
-				}
-			}
-			if !found {
-				return ErrProviderLayerNotRegistered{
-					MapName:       string(m.Name),
-					ProviderLayer: string(l.ProviderLayer),
-					Provider:      providerLayer[0],
-				}
-			}
+			// lookup our provider
 
-			var defaultTags map[string]interface{}
-			if l.DefaultTags != nil {
-				var ok bool
-				defaultTags, ok = l.DefaultTags.(map[string]interface{})
-				if !ok {
-					return ErrDefaultTagsInvalid{
-						ProviderLayer: string(l.ProviderLayer),
+			// first check to see if we are an mvt type of map.
+			if newMap.HasMVTProvider() {
+				// okay we need to make sure the provider names match up.
+				if newMap.MVTProviderName() != providerName {
+					return config.ErrMVTDiffereProviders{
+						Original: newMap.MVTProviderName(),
+						Current:  providerName,
 					}
 				}
+				layerer = newMap.MVTProvider()
+				goto ADDLAYER
 			}
 
-			var minZoom uint
-			if l.MinZoom != nil {
-				minZoom = uint(*l.MinZoom)
+			// search for it in the normal providers
+			if prvd, ok := providers[providerName]; ok {
+				layerer = prvd
+				goto ADDLAYER
 			}
 
-			var maxZoom uint
-			if l.MaxZoom != nil {
-				maxZoom = uint(*l.MaxZoom)
+			// search for it in the mvt providers
+			if mvtprvd, ok := mvtProviders[providerName]; ok {
+				layerer = newMap.SetMVTProvider(providerName, mvtprvd)
+				goto ADDLAYER
 			}
 
-			// add our layer to our layers slice
-			newMap.Layers = append(newMap.Layers, atlas.Layer{
-				Name:              string(l.Name),
-				ProviderLayerName: providerLayer[1],
-				MinZoom:           minZoom,
-				MaxZoom:           maxZoom,
-				Provider:          provider,
-				DefaultTags:       defaultTags,
-				GeomType:          layerGeomType,
-				DontSimplify:      bool(l.DontSimplify),
-				DontClip:          bool(l.DontClip),
-			})
+			// We did not find the provider
+			return ErrProviderNotFound{providerName}
+
+		ADDLAYER:
+
+			newLayer, err := initLayer(&l, string(m.Name), layerer)
+			if err != nil {
+				return err
+			}
+			newMap.Layers = append(newMap.Layers, newLayer)
 		}
-
 		a.AddMap(newMap)
 	}
 

@@ -25,6 +25,7 @@ import (
 	"github.com/go-spatial/geom/slippy"
 	tegola "github.com/go-spatial/tegola-postgres"
 	"github.com/go-spatial/tegola-postgres/dict"
+	"github.com/go-spatial/tegola-postgres/mvtprovider"
 	"github.com/go-spatial/tegola-postgres/proj"
 	"github.com/go-spatial/tegola-postgres/provider"
 	"github.com/go-spatial/tegola-postgres/provider/debug"
@@ -62,11 +63,25 @@ type Map struct {
 	TileExtent uint64
 	TileBuffer uint64
 
-	mvtProvider bool
+	mvtProviderName string
+	mvtProvider     mvtprovider.Tiler
+}
+
+func (m Map) HasMVTProvider() bool           { return m.mvtProvider != nil }
+func (m Map) MVTProvider() mvtprovider.Tiler { return m.mvtProvider }
+func (m Map) MVTProviderName() string        { return m.mvtProviderName }
+func (m *Map) SetMVTProvider(name string, p mvtprovider.Tiler) mvtprovider.Tiler {
+	m.mvtProviderName = name
+	m.mvtProvider = p
+	return p
 }
 
 // AddDebugLayers returns a copy of a Map with the debug layers appended to the layer list
 func (m Map) AddDebugLayers() Map {
+	// can not modify the layers on an mvt provider map
+	if m.mvtProvider != nil {
+		return m
+	}
 	// make an explicit copy of the layers
 	layers := make([]Layer, len(m.Layers))
 	copy(layers, m.Layers)
@@ -138,6 +153,18 @@ func (m Map) FilterLayersByName(names ...string) Map {
 
 // TODO (arolek): support for max zoom
 func (m Map) Encode(ctx context.Context, tile *slippy.Tile) ([]byte, error) {
+	if m.mvtProvider != nil {
+		// get the list of our layers
+		ptile := provider.NewTile(tile.Z, tile.X, tile.Y,
+			uint(m.TileBuffer), uint(m.SRID))
+
+		layerNames := make([]string, 0, len(m.Layers))
+		for i := range m.Layers {
+			layerNames = append(layerNames, m.Layers[i].MVTName())
+		}
+		return m.mvtProvider.MVTForLayers(ctx, ptile, layerNames)
+	}
+
 	// tile container
 	var mvtTile mvt.Tile
 	// wait group for concurrent layer fetching
