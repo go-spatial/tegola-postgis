@@ -16,7 +16,7 @@ import (
 )
 
 // genSQL will fill in the SQL field of a layer given a pool, and list of fields.
-func genSQL(l *Layer, pool *pgx.ConnPool, tblname string, flds []string) (sql string, err error) {
+func genSQL(l *Layer, pool *pgx.ConnPool, tblname string, flds []string, buffer bool) (sql string, err error) {
 
 	// we need to hit the database to see what the fields are.
 	if len(flds) == 0 {
@@ -26,7 +26,7 @@ func genSQL(l *Layer, pool *pgx.ConnPool, tblname string, flds []string) (sql st
 		//	'tablename' param. because of this case normal SQL token replacement needs to be
 		//	applied to tablename SQL generation
 		tile := provider.NewTile(0, 0, 0, 64, proj.WebMercator)
-		sql, err = replaceTokens(sql, 3857, tile)
+		sql, err = replaceTokens(sql, 3857, tile, buffer)
 		if err != nil {
 			return "", err
 		}
@@ -91,18 +91,23 @@ const (
 // !SCALE_DENOMINATOR! - scale denominator, assuming 90.7 DPI (i.e. 0.28mm pixel size)
 // !PIXEL_WIDTH! - the pixel width in meters, assuming 256x256 tiles
 // !PIXEL_HEIGHT! - the pixel height in meters, assuming 256x256 tiles
-func replaceTokens(sql string, srid uint64, tile provider.Tile) (string, error) {
+func replaceTokens(sql string, srid uint64, tile provider.Tile, withBuffer bool) (string, error) {
+	var extent *geom.Extent
 
-	bufferedExtent, _ := tile.BufferedExtent()
+	if withBuffer {
+		extent, _ = tile.BufferedExtent()
+	} else {
+		extent, _ = tile.Extent()
+	}
 
 	// TODO: leverage helper functions for minx / miny to make this easier to follow
 	// TODO: it's currently assumed the tile will always be in WebMercator. Need to support different projections
-	minGeo, err := proj.FromWebMercator(srid, geom.Point{bufferedExtent.MinX(), bufferedExtent.MinY()})
+	minGeo, err := proj.FromWebMercator(srid, geom.Point{extent.MinX(), extent.MinY()})
 	if err != nil {
 		return "", fmt.Errorf("Error trying to convert tile point: %v ", err)
 	}
 
-	maxGeo, err := proj.FromWebMercator(srid, geom.Point{bufferedExtent.MaxX(), bufferedExtent.MaxY()})
+	maxGeo, err := proj.FromWebMercator(srid, geom.Point{extent.MaxX(), extent.MaxY()})
 	if err != nil {
 		return "", fmt.Errorf("Error trying to convert tile point: %v ", err)
 	}
@@ -111,7 +116,7 @@ func replaceTokens(sql string, srid uint64, tile provider.Tile) (string, error) 
 
 	bbox := fmt.Sprintf("ST_MakeEnvelope(%g,%g,%g,%g,%d)", minPt.X(), minPt.Y(), maxPt.X(), maxPt.Y(), srid)
 
-	extent, _ := tile.Extent()
+	extent, _ = tile.Extent()
 	// TODO: Always convert to meter if we support different projections
 	pixelWidth := (extent.MaxX() - extent.MinX()) / 256
 	pixelHeight := (extent.MaxY() - extent.MinY()) / 256

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math"
 	"os"
 	"regexp"
 	"strings"
@@ -296,7 +295,7 @@ func CreateTileProvider(config dict.Dicter) (*Provider, error) {
 			// Tablename and Fields will be used to build the query.
 			// We need to do some work. We need to check to see Fields contains the geom and gid fields
 			// and if not add them to the list. If Fields list is empty/nil we will use '*' for the field list.
-			l.sql, err = genSQL(&l, p.pool, tblName, fields)
+			l.sql, err = genSQL(&l, p.pool, tblName, fields, true)
 			if err != nil {
 				return nil, fmt.Errorf("could not generate sql, for layer(%v): %v", lname, err)
 			}
@@ -433,7 +432,7 @@ func (p Provider) inspectLayerGeomType(l *Layer) error {
 	tile := provider.NewTile(0, 0, 0, 64, proj.WebMercator)
 
 	// normal replacer
-	sql, err = replaceTokens(sql, l.srid, tile)
+	sql, err = replaceTokens(sql, l.srid, tile, true)
 	if err != nil {
 		return err
 	}
@@ -512,7 +511,7 @@ func (p Provider) TileFeatures(ctx context.Context, layer string, tile provider.
 		return ErrLayerNotFound{layer}
 	}
 
-	sql, err := replaceTokens(plyr.sql, plyr.srid, tile)
+	sql, err := replaceTokens(plyr.sql, plyr.srid, tile, true)
 	if err != nil {
 		return fmt.Errorf("error replacing layer tokens for layer (%v) SQL (%v): %v", layer, sql, err)
 	}
@@ -606,65 +605,47 @@ func (p Provider) TileFeatures(ctx context.Context, layer string, tile provider.
 
 func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers []string) ([]byte, error) {
 
-	/*
-			sqls := []string{
-				`SELECT ST_AsMVTGeom(geom_3857, !BBox!) AS geom_3857, gid, name, name_alt
-		FROM ne._110m_admin_0_boundary_lines_land
-		WHERE geom_3857 && !BBOX!`,
-				`SELECT ST_AsMVTGeom(geom_3857, !BBox!) AS geom_3857, gid, name
-		FROM ne._50m_admin_1_states_provinces_lines
-		WHERE geom_3857 && !BBOX!`,
-			}
-	*/
-	sqls := make([]string, 0, len(layers))
+	var (
+		err  error
+		sqls = make([]string, 0, len(layers))
+	)
+
 	for i := range layers {
-		log.Printf("looking for layer: %v", layers[i])
+		if debug {
+			log.Printf("looking for layer: %v", layers[i])
+		}
 		l, ok := p.Layer(layers[i])
 		if !ok {
 			continue
 		}
-		sqls = append(sqls, l.sql)
-	}
-
-	var finalSQL strings.Builder
-
-	isize := int(math.Log10(float64(len(sqls)))) + 1
-
-	for i := range sqls {
-		sql, err := replaceTokens(sqls[i], 3857, tile)
+		sql, err := replaceTokens(l.sql, l.SRID(), tile, false)
 		if err != nil {
 			return nil, err
 		}
-		if i == 0 {
-			fmt.Fprintf(&finalSQL, "\nWITH layer%0*d AS (\n%s\n)\n", isize, i, sql)
-		} else {
-			fmt.Fprintf(&finalSQL, "\n, layer%0*d AS (\n%s\n)\n", isize, i, sql)
-		}
+
+		sqls = append(sqls, fmt.Sprintf(
+			`(SELECT ST_AsMVT(q,'%s') AS data FROM ( %s ) AS q)`,
+			l.Name(),
+			sql,
+		))
 	}
-	finalSQL.Write([]byte("\nSELECT"))
-	for i := 0; i < len(sqls); i++ {
-		if i != 0 {
-			fmt.Fprintf(&finalSQL, " ||")
-		}
-		fmt.Fprintf(&finalSQL, " ST_AsMVT(layer%0*d.*)", isize, i)
-	}
-	finalSQL.Write([]byte("\nFROM"))
-	for i := 0; i < len(sqls); i++ {
-		if i != 0 {
-			fmt.Fprintf(&finalSQL, ` ,`)
-		}
-		fmt.Fprintf(&finalSQL, ` layer%0*d`, isize, i)
-	}
-	finalSQL.Write([]byte(";"))
+
+	subsqls := strings.Join(sqls, "||")
+
+	fsql := fmt.Sprintf(`SELECT( %s ) AS data`, subsqls)
+
 	var data pgtype.Bytea
-	log.Printf("SQL:\n%s\n", finalSQL.String())
-	err := p.pool.QueryRow(finalSQL.String()).Scan(&data)
+	if debug {
+		log.Printf("SQL:\n%s\n", fsql)
+	}
+	err = p.pool.QueryRow(fsql).Scan(&data)
 	// data may have garbage in it.
 	if err != nil {
-		log.Printf("got err: %v", err)
 		return []byte{}, err
 	}
-	log.Printf("got %v bytes back status: %v", len(data.Bytes), data.Status)
+	if debug {
+		log.Printf("got %v bytes back status: %v", len(data.Bytes), data.Status)
+	}
 	return data.Bytes, nil
 }
 
