@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"os"
 	"regexp"
 	"strings"
 
 	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/pgtype"
 
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/encoding/wkb"
@@ -604,49 +606,65 @@ func (p Provider) TileFeatures(ctx context.Context, layer string, tile provider.
 
 func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers []string) ([]byte, error) {
 
-	sqls := []string{
-		`SELECT ST_AsMVTGeom(geom_3857, !BBox!) AS geom_3857, gid, name, name_alt
-FROM ne._110m_admin_0_boundary_lines_land 
-WHERE geom_3857 && !BBOX!`,
-		`SELECT ST_AsMVTGeom(geom_3857, !BBox!) AS geom_3857, gid, name
-FROM ne._50m_admin_1_states_provinces_lines
-WHERE geom_3857 && !BBOX!`,
+	/*
+			sqls := []string{
+				`SELECT ST_AsMVTGeom(geom_3857, !BBox!) AS geom_3857, gid, name, name_alt
+		FROM ne._110m_admin_0_boundary_lines_land
+		WHERE geom_3857 && !BBOX!`,
+				`SELECT ST_AsMVTGeom(geom_3857, !BBox!) AS geom_3857, gid, name
+		FROM ne._50m_admin_1_states_provinces_lines
+		WHERE geom_3857 && !BBOX!`,
+			}
+	*/
+	sqls := make([]string, 0, len(layers))
+	for i := range layers {
+		log.Printf("looking for layer: %v", layers[i])
+		l, ok := p.Layer(layers[i])
+		if !ok {
+			continue
+		}
+		sqls = append(sqls, l.sql)
 	}
+
 	var finalSQL strings.Builder
+
+	isize := int(math.Log10(float64(len(sqls)))) + 1
 
 	for i := range sqls {
 		sql, err := replaceTokens(sqls[i], 3857, tile)
 		if err != nil {
 			return nil, err
 		}
-		fmt.Fprintf(&finalSQL, `
-WITH layer%d AS (
-		%s
-)`, i, sql)
+		if i == 0 {
+			fmt.Fprintf(&finalSQL, "\nWITH layer%0*d AS (\n%s\n)\n", isize, i, sql)
+		} else {
+			fmt.Fprintf(&finalSQL, "\n, layer%0*d AS (\n%s\n)\n", isize, i, sql)
+		}
 	}
 	finalSQL.Write([]byte("\nSELECT"))
 	for i := 0; i < len(sqls); i++ {
 		if i != 0 {
-			fmt.Fprintf(&finalSQL, ` ||`)
+			fmt.Fprintf(&finalSQL, " ||")
 		}
-		fmt.Fprintf(&finalSQL, ` ST_AsMVT(layer%d.*)`, i)
+		fmt.Fprintf(&finalSQL, " ST_AsMVT(layer%0*d.*)", isize, i)
 	}
 	finalSQL.Write([]byte("\nFROM"))
 	for i := 0; i < len(sqls); i++ {
 		if i != 0 {
 			fmt.Fprintf(&finalSQL, ` ,`)
 		}
-		fmt.Fprintf(&finalSQL, ` layer%d`, i)
+		fmt.Fprintf(&finalSQL, ` layer%0*d`, isize, i)
 	}
 	finalSQL.Write([]byte(";"))
-	var data []byte
+	var data pgtype.Bytea
 	log.Printf("SQL:\n%s\n", finalSQL.String())
-	err := p.pool.QueryRow(finalSQL.String()).Scan(data)
+	err := p.pool.QueryRow(finalSQL.String()).Scan(&data)
 	// data may have garbage in it.
 	if err != nil {
 		return []byte{}, err
 	}
-	return data, nil
+	log.Printf("got %v bytes back status: %v", len(data.Bytes), data.Status)
+	return data.Bytes, nil
 }
 
 // Close will close the Provider's database connection
