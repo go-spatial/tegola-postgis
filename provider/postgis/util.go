@@ -26,7 +26,7 @@ func genSQL(l *Layer, pool *pgx.ConnPool, tblname string, flds []string, buffer 
 		//	'tablename' param. because of this case normal SQL token replacement needs to be
 		//	applied to tablename SQL generation
 		tile := provider.NewTile(0, 0, 0, 64, proj.WebMercator)
-		sql, err = replaceTokens(sql, 3857, tile, buffer)
+		sql, err = replaceTokens(sql, l, tile, buffer)
 		if err != nil {
 			return "", err
 		}
@@ -79,9 +79,15 @@ func genSQL(l *Layer, pool *pgx.ConnPool, tblname string, flds []string, buffer 
 const (
 	bboxToken             = "!BBOX!"
 	zoomToken             = "!ZOOM!"
+	xToken                = "!X!"
+	yToken                = "!Y!"
+	zToken                = "!Z!"
 	scaleDenominatorToken = "!SCALE_DENOMINATOR!"
 	pixelWidthToken       = "!PIXEL_WIDTH!"
 	pixelHeightToken      = "!PIXEL_HEIGHT!"
+	idFieldToken          = "!ID_FIELD!"
+	geomFieldToken        = "!GEOM_FIELD!"
+	geomTypeToken         = "!GEOM_TYPE!"
 )
 
 // replaceTokens replaces tokens in the provided SQL string
@@ -91,8 +97,12 @@ const (
 // !SCALE_DENOMINATOR! - scale denominator, assuming 90.7 DPI (i.e. 0.28mm pixel size)
 // !PIXEL_WIDTH! - the pixel width in meters, assuming 256x256 tiles
 // !PIXEL_HEIGHT! - the pixel height in meters, assuming 256x256 tiles
-func replaceTokens(sql string, srid uint64, tile provider.Tile, withBuffer bool) (string, error) {
+func replaceTokens(sql string, lyr *Layer, tile provider.Tile, withBuffer bool) (string, error) {
 	var extent *geom.Extent
+	if lyr == nil {
+		return "", fmt.Errorf("layer is nil")
+	}
+	srid := lyr.SRID()
 
 	if withBuffer {
 		extent, _ = tile.BufferedExtent()
@@ -121,12 +131,22 @@ func replaceTokens(sql string, srid uint64, tile provider.Tile, withBuffer bool)
 	pixelWidth := (extent.MaxX() - extent.MinX()) / 256
 	pixelHeight := (extent.MaxY() - extent.MinY()) / 256
 	scaleDenominator := pixelWidth / 0.00028 /* px size in m */
+	geoType := ""
+	if lyr.GeomType() != nil {
+		geoType = fmt.Sprintf("%v", lyr.GeomType())
+	}
 
 	// replace query string tokens
-	z, _, _ := tile.ZXY()
+	z, x, y := tile.ZXY()
 	tokenReplacer := strings.NewReplacer(
 		bboxToken, bbox,
 		zoomToken, strconv.FormatUint(uint64(z), 10),
+		zToken, strconv.FormatUint(uint64(z), 10),
+		xToken, strconv.FormatUint(uint64(x), 10),
+		yToken, strconv.FormatUint(uint64(y), 10),
+		idFieldToken, lyr.IDFieldName(),
+		geomFieldToken, lyr.GeomFieldName(),
+		geomTypeToken, geoType,
 		scaleDenominatorToken, strconv.FormatFloat(scaleDenominator, 'f', -1, 64),
 		pixelWidthToken, strconv.FormatFloat(pixelWidth, 'f', -1, 64),
 		pixelHeightToken, strconv.FormatFloat(pixelHeight, 'f', -1, 64),

@@ -432,7 +432,7 @@ func (p Provider) inspectLayerGeomType(l *Layer) error {
 	tile := provider.NewTile(0, 0, 0, 64, proj.WebMercator)
 
 	// normal replacer
-	sql, err = replaceTokens(sql, l.srid, tile, true)
+	sql, err = replaceTokens(sql, l, tile, true)
 	if err != nil {
 		return err
 	}
@@ -511,7 +511,7 @@ func (p Provider) TileFeatures(ctx context.Context, layer string, tile provider.
 		return ErrLayerNotFound{layer}
 	}
 
-	sql, err := replaceTokens(plyr.sql, plyr.srid, tile, true)
+	sql, err := replaceTokens(plyr.sql, &plyr, tile, true)
 	if err != nil {
 		return fmt.Errorf("error replacing layer tokens for layer (%v) SQL (%v): %v", layer, sql, err)
 	}
@@ -618,7 +618,7 @@ func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers [
 		if !ok {
 			continue
 		}
-		sql, err := replaceTokens(l.sql, l.SRID(), tile, false)
+		sql, err := replaceTokens(l.sql, &l, tile, false)
 		if err != nil {
 			return nil, err
 		}
