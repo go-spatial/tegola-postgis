@@ -3,7 +3,7 @@ package atlas_test
 import (
 	"testing"
 
-	"github.com/go-spatial/tegola-postgres/atlas"
+	"github.com/go-spatial/tegola-postgis/atlas"
 )
 
 func TestLayerMVTName(t *testing.T) {

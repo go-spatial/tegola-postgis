@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/provider"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 var (

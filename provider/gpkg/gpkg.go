@@ -10,9 +10,9 @@ import (
 
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/encoding/wkb"
-	"github.com/go-spatial/tegola-postgres/internal/log"
-	"github.com/go-spatial/tegola-postgres/proj"
-	"github.com/go-spatial/tegola-postgres/provider"
+	"github.com/go-spatial/tegola-postgis/internal/log"
+	"github.com/go-spatial/tegola-postgis/proj"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 const (

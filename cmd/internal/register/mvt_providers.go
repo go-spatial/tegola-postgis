@@ -1,8 +1,8 @@
 package register
 
 import (
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/mvtprovider"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/mvtprovider"
 )
 
 // MVTProviders registers data provider backends

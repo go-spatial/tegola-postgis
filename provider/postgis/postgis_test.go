@@ -6,10 +6,10 @@ import (
 
 	"context"
 
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/proj"
-	"github.com/go-spatial/tegola-postgres/provider"
-	"github.com/go-spatial/tegola-postgres/provider/postgis"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/proj"
+	"github.com/go-spatial/tegola-postgis/provider"
+	"github.com/go-spatial/tegola-postgis/provider/postgis"
 	"github.com/jackc/pgx"
 )
 
@@ -305,10 +305,10 @@ func TestTileFeatures(t *testing.T) {
 		},
 		"tablename query with fields and id as field": {
 			layerConfig: map[string]interface{}{
-				postgis.ConfigKeyLayerName: "land",
-				postgis.ConfigKeyTablename: "ne_10m_land_scale_rank",
+				postgis.ConfigKeyLayerName:   "land",
+				postgis.ConfigKeyTablename:   "ne_10m_land_scale_rank",
 				postgis.ConfigKeyGeomIDField: "gid",
-				postgis.ConfigKeyFields:    []string{"gid", "scalerank"},
+				postgis.ConfigKeyFields:      []string{"gid", "scalerank"},
 			},
 			tile:                 provider.NewTile(1, 1, 1, 64, proj.WebMercator),
 			expectedFeatureCount: 4032,

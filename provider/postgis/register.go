@@ -1,9 +1,9 @@
 package postgis
 
 import (
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/mvtprovider"
-	"github.com/go-spatial/tegola-postgres/provider"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/mvtprovider"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 func init() {

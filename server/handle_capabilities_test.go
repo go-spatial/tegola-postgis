@@ -8,9 +8,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/go-spatial/tegola-postgres/atlas"
-	"github.com/go-spatial/tegola-postgres/proj"
-	"github.com/go-spatial/tegola-postgres/server"
+	"github.com/go-spatial/tegola-postgis/atlas"
+	"github.com/go-spatial/tegola-postgis/proj"
+	"github.com/go-spatial/tegola-postgis/server"
 )
 
 func TestHandleCapabilities(t *testing.T) {

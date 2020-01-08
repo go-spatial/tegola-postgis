@@ -10,8 +10,8 @@ import (
 	"sync"
 
 	"github.com/go-spatial/geom/slippy"
-	tegola "github.com/go-spatial/tegola-postgres"
-	"github.com/go-spatial/tegola-postgres/cache"
+	tegola "github.com/go-spatial/tegola-postgis"
+	"github.com/go-spatial/tegola-postgis/cache"
 )
 
 var (

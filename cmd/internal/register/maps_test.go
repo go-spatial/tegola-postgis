@@ -3,10 +3,10 @@ package register_test
 import (
 	"testing"
 
-	"github.com/go-spatial/tegola-postgres/atlas"
-	"github.com/go-spatial/tegola-postgres/cmd/internal/register"
-	"github.com/go-spatial/tegola-postgres/config"
-	"github.com/go-spatial/tegola-postgres/dict"
+	"github.com/go-spatial/tegola-postgis/atlas"
+	"github.com/go-spatial/tegola-postgis/cmd/internal/register"
+	"github.com/go-spatial/tegola-postgis/config"
+	"github.com/go-spatial/tegola-postgis/dict"
 )
 
 func TestMaps(t *testing.T) {

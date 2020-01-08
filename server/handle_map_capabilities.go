@@ -10,8 +10,8 @@ import (
 	"github.com/dimfeld/httptreemux"
 
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/tegola-postgres/atlas"
-	"github.com/go-spatial/tegola-postgres/mapbox/tilejson"
+	"github.com/go-spatial/tegola-postgis/atlas"
+	"github.com/go-spatial/tegola-postgis/mapbox/tilejson"
 )
 
 type HandleMapCapabilities struct {

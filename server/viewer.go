@@ -8,7 +8,7 @@ import (
 
 	"github.com/dimfeld/httptreemux"
 
-	"github.com/go-spatial/tegola-postgres/server/bindata"
+	"github.com/go-spatial/tegola-postgis/server/bindata"
 )
 
 // setupViewer in this file is used for reigstering the viewer routes when the viewer

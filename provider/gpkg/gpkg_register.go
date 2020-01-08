@@ -15,10 +15,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/internal/log"
-	"github.com/go-spatial/tegola-postgres/proj"
-	"github.com/go-spatial/tegola-postgres/provider"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/internal/log"
+	"github.com/go-spatial/tegola-postgis/proj"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 var colFinder *regexp.Regexp

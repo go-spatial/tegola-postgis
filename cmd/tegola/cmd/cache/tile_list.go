@@ -10,9 +10,9 @@ import (
 
 	"github.com/go-spatial/cobra"
 	"github.com/go-spatial/geom/slippy"
-	gdcmd "github.com/go-spatial/tegola-postgres/internal/cmd"
-	"github.com/go-spatial/tegola-postgres/internal/log"
-	"github.com/go-spatial/tegola-postgres/provider"
+	gdcmd "github.com/go-spatial/tegola-postgis/internal/cmd"
+	"github.com/go-spatial/tegola-postgis/internal/log"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 var (

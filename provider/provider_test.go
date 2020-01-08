@@ -3,8 +3,8 @@ package provider_test
 import (
 	"testing"
 
-	"github.com/go-spatial/tegola-postgres/provider"
-	"github.com/go-spatial/tegola-postgres/provider/test"
+	"github.com/go-spatial/tegola-postgis/provider"
+	"github.com/go-spatial/tegola-postgis/provider/test"
 )
 
 func TestProviderInterface(t *testing.T) {

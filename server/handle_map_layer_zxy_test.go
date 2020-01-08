@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/go-spatial/geom/encoding/mvt/vector_tile"
-	"github.com/go-spatial/tegola-postgres/atlas"
+	"github.com/go-spatial/tegola-postgis/atlas"
 	"github.com/golang/protobuf/proto"
 )
 
@@ -125,15 +125,15 @@ func TestHandleMapLayerZXY(t *testing.T) {
 			expectedBody: "",
 		},
 		"on boundary tile": {
-			uri:          "/maps/test-map/test-layer/4/8/7.pbf",
-			atlas:        newTestMapWithBounds(0, 0, 10, 10),
-			expectedCode: http.StatusOK,
+			uri:            "/maps/test-map/test-layer/4/8/7.pbf",
+			atlas:          newTestMapWithBounds(0, 0, 10, 10),
+			expectedCode:   http.StatusOK,
 			expectedLayers: []string{"test-layer"},
 		},
 		"in boundary tile": {
-			uri:          "/maps/test-map/test-layer/4/7/7.pbf",
-			atlas:        newTestMapWithBounds(-180, -90, 180, 90),
-			expectedCode: http.StatusOK,
+			uri:            "/maps/test-map/test-layer/4/7/7.pbf",
+			atlas:          newTestMapWithBounds(-180, -90, 180, 90),
+			expectedCode:   http.StatusOK,
 			expectedLayers: []string{"test-layer"},
 		},
 		"options": {

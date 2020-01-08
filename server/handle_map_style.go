@@ -12,9 +12,9 @@ import (
 	"gopkg.in/go-playground/colors.v1"
 
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/tegola-postgres/atlas"
-	"github.com/go-spatial/tegola-postgres/internal/log"
-	"github.com/go-spatial/tegola-postgres/mapbox/style"
+	"github.com/go-spatial/tegola-postgis/atlas"
+	"github.com/go-spatial/tegola-postgis/internal/log"
+	"github.com/go-spatial/tegola-postgis/mapbox/style"
 )
 
 type HandleMapStyle struct {

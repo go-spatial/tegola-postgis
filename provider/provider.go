@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/internal/log"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/internal/log"
 )
 
 // TODO(@ear7h) remove this atrocity from the code base

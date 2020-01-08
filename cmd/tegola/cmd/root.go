@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/go-spatial/cobra"
-	"github.com/go-spatial/tegola-postgres/atlas"
-	"github.com/go-spatial/tegola-postgres/cmd/internal/register"
-	cachecmd "github.com/go-spatial/tegola-postgres/cmd/tegola/cmd/cache"
-	"github.com/go-spatial/tegola-postgres/config"
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/internal/log"
+	"github.com/go-spatial/tegola-postgis/atlas"
+	"github.com/go-spatial/tegola-postgis/cmd/internal/register"
+	cachecmd "github.com/go-spatial/tegola-postgis/cmd/tegola/cmd/cache"
+	"github.com/go-spatial/tegola-postgis/config"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/internal/log"
 )
 
 var (

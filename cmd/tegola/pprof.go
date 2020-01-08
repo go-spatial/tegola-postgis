@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-spatial/tegola-postgres/internal/log"
+	"github.com/go-spatial/tegola-postgis/internal/log"
 )
 
 func init() {
