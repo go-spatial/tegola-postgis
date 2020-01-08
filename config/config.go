@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	tegola "github.com/go-spatial/tegola-postgres"
-	"github.com/go-spatial/tegola-postgres/internal/env"
-	"github.com/go-spatial/tegola-postgres/internal/log"
+	tegola "github.com/go-spatial/tegola-postgis"
+	"github.com/go-spatial/tegola-postgis/internal/env"
+	"github.com/go-spatial/tegola-postgis/internal/log"
 )
 
 var blacklistHeaders = []string{"content-encoding", "content-length", "content-type"}

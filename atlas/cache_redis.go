@@ -8,5 +8,5 @@ package atlas
 //
 // go build -tags 'noRedisCache'
 import (
-	_ "github.com/go-spatial/tegola-postgres/cache/redis"
+	_ "github.com/go-spatial/tegola-postgis/cache/redis"
 )

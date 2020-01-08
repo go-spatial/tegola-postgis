@@ -2,7 +2,7 @@ package atlas
 
 import (
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/tegola-postgres/provider"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 type Layer struct {

@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/internal/ttools"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/internal/ttools"
 )
 
 // TESTENV is the environment variable that must be set to "yes" to run postgis tests.

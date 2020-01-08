@@ -5,8 +5,8 @@ package gpkg
 import (
 	"testing"
 
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/provider"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 // This is a test to just see that the init function is doing something.

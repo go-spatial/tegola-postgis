@@ -23,12 +23,12 @@ import (
 	"github.com/go-spatial/geom/planar/makevalid/hitmap"
 	"github.com/go-spatial/geom/planar/simplify"
 	"github.com/go-spatial/geom/slippy"
-	tegola "github.com/go-spatial/tegola-postgres"
-	"github.com/go-spatial/tegola-postgres/dict"
-	"github.com/go-spatial/tegola-postgres/mvtprovider"
-	"github.com/go-spatial/tegola-postgres/proj"
-	"github.com/go-spatial/tegola-postgres/provider"
-	"github.com/go-spatial/tegola-postgres/provider/debug"
+	tegola "github.com/go-spatial/tegola-postgis"
+	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/mvtprovider"
+	"github.com/go-spatial/tegola-postgis/proj"
+	"github.com/go-spatial/tegola-postgis/provider"
+	"github.com/go-spatial/tegola-postgis/provider/debug"
 )
 
 // NewMap creates a new map with the necessary default values

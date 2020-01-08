@@ -16,9 +16,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 
 	"github.com/go-spatial/geom/encoding/mvt"
-	tegola "github.com/go-spatial/tegola-postgres"
-	"github.com/go-spatial/tegola-postgres/cache"
-	"github.com/go-spatial/tegola-postgres/dict"
+	tegola "github.com/go-spatial/tegola-postgis"
+	"github.com/go-spatial/tegola-postgis/cache"
+	"github.com/go-spatial/tegola-postgis/dict"
 )
 
 var (

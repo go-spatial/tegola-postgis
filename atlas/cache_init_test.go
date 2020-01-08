@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/go-spatial/tegola-postgres/cache"
+	"github.com/go-spatial/tegola-postgis/cache"
 )
 
 func TestCheckCacheTypes(t *testing.T) {

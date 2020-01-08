@@ -7,9 +7,9 @@ import (
 
 	"github.com/jackc/pgx"
 
-	"github.com/go-spatial/tegola-postgres/internal/ttools"
-	"github.com/go-spatial/tegola-postgres/proj"
-	"github.com/go-spatial/tegola-postgres/provider"
+	"github.com/go-spatial/tegola-postgis/internal/ttools"
+	"github.com/go-spatial/tegola-postgis/proj"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 func TestReplaceTokens(t *testing.T) {

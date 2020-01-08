@@ -5,11 +5,11 @@ import (
 	"html"
 
 	"github.com/go-spatial/geom"
-	tegola "github.com/go-spatial/tegola-postgres"
-	"github.com/go-spatial/tegola-postgres/atlas"
-	"github.com/go-spatial/tegola-postgres/config"
-	"github.com/go-spatial/tegola-postgres/mvtprovider"
-	"github.com/go-spatial/tegola-postgres/provider"
+	tegola "github.com/go-spatial/tegola-postgis"
+	"github.com/go-spatial/tegola-postgis/atlas"
+	"github.com/go-spatial/tegola-postgis/config"
+	"github.com/go-spatial/tegola-postgis/mvtprovider"
+	"github.com/go-spatial/tegola-postgis/provider"
 )
 
 type ErrProviderLayerInvalid struct {

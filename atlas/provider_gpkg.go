@@ -8,5 +8,5 @@ package atlas
 //
 // go build -tags 'noGpkgProvider'
 import (
-	_ "github.com/go-spatial/tegola-postgres/provider/gpkg"
+	_ "github.com/go-spatial/tegola-postgis/provider/gpkg"
 )

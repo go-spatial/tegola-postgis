@@ -3,8 +3,8 @@ package register
 import (
 	"errors"
 
-	"github.com/go-spatial/tegola-postgres/cache"
-	"github.com/go-spatial/tegola-postgres/dict"
+	"github.com/go-spatial/tegola-postgis/cache"
+	"github.com/go-spatial/tegola-postgis/dict"
 )
 
 var (

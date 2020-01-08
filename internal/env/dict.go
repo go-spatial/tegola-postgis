@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/go-spatial/tegola-postgres/dict"
+	"github.com/go-spatial/tegola-postgis/dict"
 )
 
 type Dict map[string]interface{}
@@ -22,7 +22,7 @@ func (d Dict) Dict(key string) (v Dict, err error) {
 	}
 
 	if dv, ok = val.(Dict); !ok {
-		return v, dict.ErrKeyType{Key: key, Value: val, T:reflect.TypeOf(v)}
+		return v, dict.ErrKeyType{Key: key, Value: val, T: reflect.TypeOf(v)}
 	}
 	return dv, nil
 }

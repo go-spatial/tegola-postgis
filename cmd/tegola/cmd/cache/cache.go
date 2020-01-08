@@ -11,9 +11,9 @@ import (
 
 	"github.com/go-spatial/cobra" // The config from the main app
 	"github.com/go-spatial/geom/slippy"
-	"github.com/go-spatial/tegola-postgres/atlas"
-	"github.com/go-spatial/tegola-postgres/config"
-	"github.com/go-spatial/tegola-postgres/internal/log"
+	"github.com/go-spatial/tegola-postgis/atlas"
+	"github.com/go-spatial/tegola-postgis/config"
+	"github.com/go-spatial/tegola-postgis/internal/log"
 )
 
 // the config from the main app

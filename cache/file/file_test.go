@@ -5,10 +5,10 @@ import (
 	"reflect"
 	"testing"
 
-	tegola "github.com/go-spatial/tegola-postgres"
-	"github.com/go-spatial/tegola-postgres/cache"
-	"github.com/go-spatial/tegola-postgres/cache/file"
-	"github.com/go-spatial/tegola-postgres/dict"
+	tegola "github.com/go-spatial/tegola-postgis"
+	"github.com/go-spatial/tegola-postgis/cache"
+	"github.com/go-spatial/tegola-postgis/cache/file"
+	"github.com/go-spatial/tegola-postgis/dict"
 )
 
 func TestNew(t *testing.T) {

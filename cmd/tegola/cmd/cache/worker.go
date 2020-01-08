@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/go-spatial/geom/slippy"
-	"github.com/go-spatial/tegola-postgres/atlas"
-	"github.com/go-spatial/tegola-postgres/cache"
-	"github.com/go-spatial/tegola-postgres/internal/log"
+	"github.com/go-spatial/tegola-postgis/atlas"
+	"github.com/go-spatial/tegola-postgis/cache"
+	"github.com/go-spatial/tegola-postgis/internal/log"
 )
 
 type seedPurgeWorkerTileError struct {

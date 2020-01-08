@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/go-spatial/tegola-postgres/server"
+	"github.com/go-spatial/tegola-postgis/server"
 )
 
 const (

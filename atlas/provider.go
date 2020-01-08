@@ -2,5 +2,5 @@ package atlas
 
 // The point of this file is to load and register the default provider backends
 import (
-	_ "github.com/go-spatial/tegola-postgres/provider/debug"
+	_ "github.com/go-spatial/tegola-postgis/provider/debug"
 )
