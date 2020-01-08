@@ -22,7 +22,7 @@ func TestReplaceTokens(t *testing.T) {
 
 	fn := func(tc tcase) func(t *testing.T) {
 		return func(t *testing.T) {
-			sql, err := replaceTokens(tc.sql, tc.srid, tc.tile)
+			sql, err := replaceTokens(tc.sql, tc.srid, tc.tile, true)
 			if err != nil {
 				t.Errorf("unexpected error, Expected nil Got %v", err)
 				return

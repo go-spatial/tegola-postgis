@@ -11,10 +11,11 @@ import (
 
 func TestMaps(t *testing.T) {
 	type tcase struct {
-		atlas       atlas.Atlas
-		maps        []config.Map
-		providers   []dict.Dict
-		expectedErr error
+		atlas        atlas.Atlas
+		maps         []config.Map
+		providers    []dict.Dict
+		mvtProviders []dict.Dict
+		expectedErr  error
 	}
 
 	fn := func(t *testing.T, tc tcase) {
@@ -32,7 +33,20 @@ func TestMaps(t *testing.T) {
 			return
 		}
 
-		err = register.Maps(&tc.atlas, tc.maps, providers)
+		// init out mvt providers
+		// but first convert []env.Map -> []dict.Dicter
+		mvtProvArr := make([]dict.Dicter, len(tc.mvtProviders))
+		for i := range tc.mvtProviders {
+			mvtProvArr[i] = tc.mvtProviders[i]
+		}
+
+		mvtProviders, err := register.MVTProviders(mvtProvArr)
+		if err != nil {
+			t.Errorf("unexpected err: %v", err)
+			return
+		}
+
+		err = register.Maps(&tc.atlas, tc.maps, providers, mvtProviders)
 		if tc.expectedErr != nil {
 			if err.Error() != tc.expectedErr.Error() {
 				t.Errorf("invalid error. expected: %v, got: %v", tc.expectedErr, err.Error())

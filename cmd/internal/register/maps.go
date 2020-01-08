@@ -157,7 +157,10 @@ func Maps(a *atlas.Atlas, maps []config.Map, providers map[string]provider.Tiler
 			// split our provider name (provider.layer) into [provider,layer]
 			providerName, _, err := l.GetProviderLayerName()
 			if err != nil {
-				return err
+				return ErrProviderLayerInvalid{
+					ProviderLayer: string(l.ProviderLayer),
+					Map:           string(m.Name),
+				}
 			}
 
 			var layerer provider.Layerer
