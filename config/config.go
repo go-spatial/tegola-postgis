@@ -29,7 +29,7 @@ type Config struct {
 	Cache        env.Dict  `toml:"cache"`
 	// Map of providers.
 	Providers    []env.Dict `toml:"providers"`
-	MVTProviders []env.Dict `toml:"mvtproviders`
+	MVTProviders []env.Dict `toml:"mvtproviders"`
 	Maps         []Map      `toml:"maps"`
 }
 
@@ -68,6 +68,7 @@ type MapLayer struct {
 	DontClip env.Bool `toml:"dont_clip"`
 }
 
+// GetProviderLayerName returns the provider and layer names
 func (ml MapLayer) GetProviderLayerName() (string, string, error) {
 	// split the provider layer (syntax is provider.layer)
 	plParts := strings.Split(string(ml.ProviderLayer), ".")
@@ -83,7 +84,6 @@ func (ml MapLayer) GetName() (string, error) {
 	if ml.Name != "" {
 		return string(ml.Name), nil
 	}
-
 	_, name, err := ml.GetProviderLayerName()
 	return name, err
 }

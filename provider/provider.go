@@ -126,12 +126,15 @@ func Exists(name string) bool {
 // For function returns a configured provider of the given type, provided the correct config map.
 func For(name string, config dict.Dicter) (Tiler, error) {
 	if providers == nil {
-		return nil, ErrUnknownProvider{}
+		return nil, ErrUnknownProvider{KnownProvidersFunc: Drivers}
 	}
 
 	p, ok := providers[name]
 	if !ok {
-		return nil, ErrUnknownProvider{Name: name}
+		return nil, ErrUnknownProvider{
+			KnownProvidersFunc: Drivers,
+			Name:               name,
+		}
 	}
 
 	return p.init(config)

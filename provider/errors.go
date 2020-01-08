@@ -3,6 +3,7 @@ package provider
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 var (
@@ -31,12 +32,21 @@ func (err ErrProviderAlreadyExists) Error() string {
 // ErrUnknownProvider is returned when no providers are registered or a requested
 // provider is not registered
 type ErrUnknownProvider struct {
-	Name string
+	Name               string
+	KnownProvidersFunc func() []string
 }
 
 func (err ErrUnknownProvider) Error() string {
-	if err.Name == "" {
-		return "no providers registered"
+	var errStr strings.Builder
+	errStr.WriteString("no providers registered")
+	if err.Name != "" {
+		errStr.Reset()
+		fmt.Fprintf(&errStr, "no providers registered by the name %s", err.Name)
 	}
-	return fmt.Sprintf("no providers registered by the name %s", err.Name)
+	if err.KnownProvidersFunc != nil {
+		errStr.WriteString(", known providers:")
+		errStr.WriteString(strings.Join(err.KnownProvidersFunc(), ","))
+	}
+
+	return errStr.String()
 }

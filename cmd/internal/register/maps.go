@@ -55,13 +55,13 @@ func (e ErrDefaultTagsInvalid) Error() string {
 	return fmt.Sprintf("'default_tags' for 'provider_layer' (%v) should be a TOML table", e.ProviderLayer)
 }
 
-func initLayer(l *config.MapLayer, mname string, lprovider provider.Layerer) (atlas.Layer, error) {
+func initLayer(l *config.MapLayer, mapName string, layerProvider provider.Layerer) (atlas.Layer, error) {
 	// read the provider's layer names
-	pname, lname, _ := l.GetProviderLayerName()
-	layerInfos, err := lprovider.Layers()
+	providerName, layerName, _ := l.GetProviderLayerName()
+	layerInfos, err := layerProvider.Layers()
 	if err != nil {
 		return atlas.Layer{}, ErrFetchingLayerInfo{
-			Provider: pname,
+			Provider: providerName,
 		}
 	}
 	providerLayer := string(l.ProviderLayer)
@@ -70,7 +70,7 @@ func initLayer(l *config.MapLayer, mname string, lprovider provider.Layerer) (at
 	var found bool
 	var layerGeomType geom.Geometry
 	for i := range layerInfos {
-		if layerInfos[i].Name() == lname {
+		if layerInfos[i].Name() == layerName {
 			found = true
 
 			// read the layerGeomType
@@ -80,9 +80,9 @@ func initLayer(l *config.MapLayer, mname string, lprovider provider.Layerer) (at
 	}
 	if !found {
 		return atlas.Layer{}, ErrProviderLayerNotRegistered{
-			MapName:       mname,
+			MapName:       mapName,
 			ProviderLayer: providerLayer,
-			Provider:      pname,
+			Provider:      providerName,
 		}
 	}
 
@@ -107,12 +107,12 @@ func initLayer(l *config.MapLayer, mname string, lprovider provider.Layerer) (at
 		maxZoom = uint(*l.MaxZoom)
 	}
 
-	prvd, _ := lprovider.(provider.Tiler)
+	prvd, _ := layerProvider.(provider.Tiler)
 
 	// add our layer to our layers slice
 	return atlas.Layer{
 		Name:              string(l.Name),
-		ProviderLayerName: lname,
+		ProviderLayerName: layerName,
 		MinZoom:           minZoom,
 		MaxZoom:           maxZoom,
 		Provider:          prvd,
@@ -154,7 +154,6 @@ func Maps(a *atlas.Atlas, maps []config.Map, providers map[string]provider.Tiler
 
 		// iterate our layers
 		for _, l := range m.Layers {
-			// split our provider name (provider.layer) into [provider,layer]
 			providerName, _, err := l.GetProviderLayerName()
 			if err != nil {
 				return ErrProviderLayerInvalid{
