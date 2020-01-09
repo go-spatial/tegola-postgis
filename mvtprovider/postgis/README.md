@@ -3,7 +3,7 @@ The PostGIS provider manages querying for tile requests against a Postgres datab
 
 
 ```toml
-[[mvtproviders]]
+[[mvt_providers]]
 name = "test_postgis"       # provider name is referenced from map layers (required)
 type = "postgis"            # the type of data provider must be "postgis" for this data provider (required)
 host = "localhost"          # PostGIS database host (required)
@@ -15,7 +15,7 @@ password = ""               # PostGIS database password (required)
 
 ### Connection Properties
 
-- `name` (string): [Required] provider name is referenced from map layers
+- `name` (string): [Required] provider name is referenced from map layers, please not that for mvt providers `mvt_` is appended to the name. 
 - `type` (string): [Required] the type of data provider. must be "postgis" to use this data provider
 - `host` (string): [Required] PostGIS database host
 - `port` (int): [Required] PostGIS database port (required)
@@ -29,10 +29,10 @@ password = ""               # PostGIS database password (required)
 In addition to the connection configuration above, Provider Layers need to be configured. A Provider Layer tells tegola how to query PostGIS for a certain layer. An example minimum config:
 
 ```toml
-[[providers.layers]]
+[[mvt_providers.layers]]
 name = "landuse"
 # this table uses "geom" for the geometry_fieldname and "gid" for the id_fieldname so they don't need to be configured
-sql = "SELECT ST_AsMVTGeom(geom,!BBOX!) AS geom, fid FROM gis.landuse WHERE geom && !BBOX!"
+sql = "SELECT ST_AsMVTGeom(geom,!BBOX!) AS geom, gid FROM gis.landuse WHERE geom && !BBOX!"
 ```
 
 ### Provider Layers Properties
@@ -51,10 +51,30 @@ sql = "SELECT ST_AsMVTGeom(geom,!BBOX!) AS geom, fid FROM gis.landuse WHERE geom
   - `!SCALE_DENOMINATOR!` - [Optional] scale denominator, assuming 90.7 DPI (i.e. 0.28mm pixel size)
   - `!PIXEL_WIDTH!` - [Optional] the pixel width in meters, assuming 256x256 tiles
   - `!PIXEL_HEIGHT!` - [Optional] the pixel height in meters, assuming 256x256 tiles
-  - `ID_FIELD` - [Optional] the id field name
-  - `GEOM_FIELD` - [Optional] the geom field name
-  - `GEOM_TYPE` - [Optional] the geom type if defined otherwise ""
+  - `!ID_FIELD!` - [Optional] the id field name
+  - `!GEOM_FIELD!` - [Optional] the geom field name
+  - `!GEOM_TYPE!` - [Optional] the geom type if defined otherwise ""
 
+## Reference in the map section
+
+When referencing the provider in the map section, one must append `mvt_` to the name. 
+
+Example:
+
+```toml
+[[maps]]
+    name = "cities"
+    center = [-90.2,38.6,3.0]  # where to center of the map (lon, lat, zoom)
+
+    [[maps.layers]]
+        name = "landuse"
+        provider_layer = "mvt_test_postgis.landuse"
+        min_zoom = 0
+        max_zoom = 14
+
+```
+
+Note `test_postgis` is refered to as `mvt_test_postgis`
 
 ## Environment Variable support
 Helpful debugging environment variables:

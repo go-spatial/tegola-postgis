@@ -18,6 +18,7 @@ Tegola is a vector tile server delivering [Mapbox Vector Tiles](https://github.c
 - Parallelized tile serving and geometry processing.
 - Support for Web Mercator (3857) and WGS84 (4326) projections.
 - Support for [AWS Lambda](cmd/tegola_lambda).
+- Support for Data Providers that can generate MVT directly. Currenly postgis's `ST_AsMVT`
 
 ## Usage
 ```
@@ -117,6 +118,23 @@ ssl_key = "privkey.pem"     # ssl key for serving by https
 type = "file"               # a file cache will cache to the local file system
 basepath = "/tmp/tegola"    # where to write the file cache
 
+# register mvt data providers
+# note mvt data providers can not be conflated
+[[mvt_providers]]
+name = "test_postgis"       # provider name is referenced from map layers (required)
+type = "postgis"            # the type of data provider must be "postgis" for this data provider (required)
+host = "localhost"          # PostGIS database host (required)
+port = 5432                 # PostGIS database port (required)
+database = "tegola"         # PostGIS database name (required)
+user = "tegola"             # PostGIS database user (required)
+password = ""               # PostGIS database password (required
+
+[[mvt_providers.layers]]
+name = "landuse"
+# MVT data provider must use SQL statements
+# this table uses "geom" for the geometry_fieldname and "gid" for the id_fieldname so they don't need to be configured
+sql = "SELECT ST_AsMVTGeom(geom,!BBOX!) AS geom, gid FROM gis.landuse WHERE geom && !BBOX!"
+
 # register data providers
 [[providers]]
 name = "test_postgis"       # provider name is referenced from map layers (required)
@@ -183,6 +201,17 @@ name = "zoning"                              # used in the URL to reference this
 	dont_clip = true                         # optionally, turn off clipping for this layer. Default is false.
 	min_zoom = 10                            # minimum zoom level to include this layer
 	max_zoom = 18                            # maximum zoom level to include this layer
+
+[[maps]]
+name = "landuse_mvt"
+
+	 [[maps.layers]]
+	 name = "landuse"
+	 provider_layer = "mvt_test_postgis.landuse" # note the mvt data provider name is prefixed with `mvt_`
+	 min_zoom = 12                            # minimum zoom level to include this layer
+	 max_zoom = 16                            # maximum zoom level to include this layer
+
+
 ```
 
 \* more on PostgreSQL SSL mode [here](https://www.postgresql.org/docs/9.2/static/libpq-ssl.html). The `postgis` config also supports "ssl_cert" and "ssl_key" options are required, corresponding semantically with "PGSSLKEY" and "PGSSLCERT". These options do not check for environment variables automatically. See the section [below](#environment-variables) on injecting environment variables into the config.
