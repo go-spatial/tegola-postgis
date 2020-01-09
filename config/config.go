@@ -68,8 +68,8 @@ type MapLayer struct {
 	DontClip env.Bool `toml:"dont_clip"`
 }
 
-// GetProviderLayerName returns the provider and layer names
-func (ml MapLayer) GetProviderLayerName() (string, string, error) {
+// ProviderLayerName returns the provider and layer names
+func (ml MapLayer) ProviderLayerName() (string, string, error) {
 	// split the provider layer (syntax is provider.layer)
 	plParts := strings.Split(string(ml.ProviderLayer), ".")
 	if len(plParts) != 2 {
@@ -79,12 +79,13 @@ func (ml MapLayer) GetProviderLayerName() (string, string, error) {
 	return plParts[0], plParts[1], nil
 }
 
-// GetName helper to get the name we care about.
+// GetName will return the user-defined Layer name from the config,
+// or if not defined will return the name of the layer associated with the provider
 func (ml MapLayer) GetName() (string, error) {
 	if ml.Name != "" {
 		return string(ml.Name), nil
 	}
-	_, name, err := ml.GetProviderLayerName()
+	_, name, err := ml.ProviderLayerName()
 	return name, err
 }
 
@@ -104,7 +105,7 @@ func (c *Config) Validate() error {
 		provider := ""
 
 		for layerKey, l := range m.Layers {
-			pname, _, err := l.GetProviderLayerName()
+			pname, _, err := l.ProviderLayerName()
 			if err != nil {
 				return err
 			}

@@ -57,7 +57,7 @@ func (e ErrDefaultTagsInvalid) Error() string {
 
 func initLayer(l *config.MapLayer, mapName string, layerProvider provider.Layerer) (atlas.Layer, error) {
 	// read the provider's layer names
-	providerName, layerName, _ := l.GetProviderLayerName()
+	providerName, layerName, _ := l.ProviderLayerName()
 	layerInfos, err := layerProvider.Layers()
 	if err != nil {
 		return atlas.Layer{}, ErrFetchingLayerInfo{
@@ -154,7 +154,7 @@ func Maps(a *atlas.Atlas, maps []config.Map, providers map[string]provider.Tiler
 
 		// iterate our layers
 		for _, l := range m.Layers {
-			providerName, _, err := l.GetProviderLayerName()
+			providerName, _, err := l.ProviderLayerName()
 			if err != nil {
 				return ErrProviderLayerInvalid{
 					ProviderLayer: string(l.ProviderLayer),

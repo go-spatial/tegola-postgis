@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -14,6 +15,22 @@ import (
 	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/pgtype"
 )
+
+const (
+	EnvSQLDebugName    = "TEGOLA_SQL_DEBUG"
+	EnvSQLDebugLayer   = "LAYER_SQL"
+	EnvSQLDebugExecute = "EXECUTE_SQL"
+)
+
+var (
+	debugLayerSQL   bool
+	debugExecuteSQL bool
+)
+
+func init() {
+	debugLayerSQL = strings.Contains(os.Getenv(EnvSQLDebugName), EnvSQLDebugLayer)
+	debugExecuteSQL = strings.Contains(os.Getenv(EnvSQLDebugName), EnvSQLDebugExecute)
+}
 
 // genSQL will fill in the SQL field of a layer given a pool, and list of fields.
 func genSQL(l *Layer, pool *pgx.ConnPool, tblname string, flds []string, buffer bool) (sql string, err error) {
@@ -93,10 +110,16 @@ const (
 // replaceTokens replaces tokens in the provided SQL string
 //
 // !BBOX! - the bounding box of the tile
+// !X! - the tile X value
+// !Y! - the tile Y value
+// !Z! - the tile Z value
 // !ZOOM! - the tile Z value
 // !SCALE_DENOMINATOR! - scale denominator, assuming 90.7 DPI (i.e. 0.28mm pixel size)
 // !PIXEL_WIDTH! - the pixel width in meters, assuming 256x256 tiles
 // !PIXEL_HEIGHT! - the pixel height in meters, assuming 256x256 tiles
+// !ID_FIELD! - the id field name
+// !GEOM_FIELD! - the geom field name
+// !GEOM_TYPE! - the geom type if defined otherwise ""
 func replaceTokens(sql string, lyr *Layer, tile provider.Tile, withBuffer bool) (string, error) {
 	var extent *geom.Extent
 	if lyr == nil {

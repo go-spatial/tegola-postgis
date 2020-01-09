@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"regexp"
 	"strings"
 
@@ -301,7 +300,7 @@ func CreateTileProvider(config dict.Dicter) (*Provider, error) {
 			}
 		}
 
-		if strings.Contains(os.Getenv("TEGOLA_SQL_DEBUG"), "LAYER_SQL") {
+		if debugLayerSQL {
 			log.Printf("SQL for Layer(%v):\n%v\n", lname, l.sql)
 		}
 
@@ -516,8 +515,8 @@ func (p Provider) TileFeatures(ctx context.Context, layer string, tile provider.
 		return fmt.Errorf("error replacing layer tokens for layer (%v) SQL (%v): %v", layer, sql, err)
 	}
 
-	if strings.Contains(os.Getenv("TEGOLA_SQL_DEBUG"), "EXECUTE_SQL") {
-		log.Printf("TEGOLA_SQL_DEBUG:EXECUTE_SQL for layer (%v): %v", layer, sql)
+	if debugExecuteSQL {
+		log.Printf("%s:%s for layer (%v): %v", EnvSQLDebugName, EnvSQLDebugExecute, layer, sql)
 	}
 
 	// context check
@@ -618,6 +617,9 @@ func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers [
 		if !ok {
 			continue
 		}
+		if debugLayerSQL {
+			log.Printf("SQL for Layer(%v):\n%v\n", l.Name(), l.sql)
+		}
 		sql, err := replaceTokens(l.sql, &l, tile, false)
 		if err != nil {
 			return nil, err
@@ -635,16 +637,21 @@ func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers [
 	fsql := fmt.Sprintf(`SELECT( %s ) AS data`, subsqls)
 
 	var data pgtype.Bytea
-	if debug {
-		log.Printf("SQL:\n%s\n", fsql)
+	if debugExecuteSQL {
+		log.Printf("%s:%s: %v", EnvSQLDebugName, EnvSQLDebugExecute, fsql)
 	}
 	err = p.pool.QueryRow(fsql).Scan(&data)
+	if debugExecuteSQL {
+		log.Printf("%s:%s: %v", EnvSQLDebugName, EnvSQLDebugExecute, fsql)
+		if err != nil {
+			log.Printf("%s:%s: returned %v bytes", EnvSQLDebugName, EnvSQLDebugExecute, len(data.Bytes))
+		} else {
+			log.Printf("%s:%s: returned error %v", EnvSQLDebugName, EnvSQLDebugExecute, err)
+		}
+	}
 	// data may have garbage in it.
 	if err != nil {
 		return []byte{}, err
-	}
-	if debug {
-		log.Printf("got %v bytes back status: %v", len(data.Bytes), data.Status)
 	}
 	return data.Bytes, nil
 }
