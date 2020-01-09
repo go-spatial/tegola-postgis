@@ -1,4 +1,4 @@
-# Tegola
+# tegola-postgis
 
 [![Build Status](https://travis-ci.org/go-spatial/tegola.svg?branch=master)](https://travis-ci.org/go-spatial/tegola)
 [![Report Card](https://goreportcard.com/badge/github.com/go-spatial/tegola)](https://goreportcard.com/badge/github.com/go-spatial/tegola)
@@ -6,7 +6,7 @@
 [![Godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/go-spatial/tegola)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/go-spatial/tegola/blob/master/LICENSE.md)
 
-Tegola is a vector tile server delivering [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-spec) with support for [PostGIS](https://postgis.net/) and [GeoPackage](https://www.geopackage.org/) data providers. User documentation can be found at [tegola.io](https://tegola.io)
+tegola-postgis is a vector tile server delivering [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-spec) with support for [PostGIS](https://postgis.net/) and [GeoPackage](https://www.geopackage.org/) data providers. User documentation can be found at [tegola.io](https://tegola.io)
 
 ## Features
 - Native geometry processing (simplification, clipping, make valid, intersection, contains, scaling, translation)
@@ -18,7 +18,7 @@ Tegola is a vector tile server delivering [Mapbox Vector Tiles](https://github.c
 - Parallelized tile serving and geometry processing.
 - Support for Web Mercator (3857) and WGS84 (4326) projections.
 - Support for [AWS Lambda](cmd/tegola_lambda).
-- Support for Data Providers that can generate MVT directly. Currenly postgis's `ST_AsMVT`
+- Support for Data Providers that can generate MVT directly. Currenly postgis's `ST_AsMVT`. This is an experimental feature in `tegola-postgis` that may be backported to `tegola`. Additional details can be found [here](mvtprovider/postgis).
 
 ## Usage
 ```

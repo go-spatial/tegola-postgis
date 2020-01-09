@@ -15,7 +15,7 @@ password = ""               # PostGIS database password (required)
 
 ### Connection Properties
 
-- `name` (string): [Required] provider name is referenced from map layers, please not that for mvt providers `mvt_` is appended to the name. 
+- `name` (string): [Required] provider name is referenced from map layers. please note that when referencing an mvt_provider form a map layer the provider name must be prexied with `mvt_`. See example config below.
 - `type` (string): [Required] the type of data provider. must be "postgis" to use this data provider
 - `host` (string): [Required] PostGIS database host
 - `port` (int): [Required] PostGIS database port (required)
@@ -55,23 +55,36 @@ sql = "SELECT ST_AsMVTGeom(geom,!BBOX!) AS geom, gid FROM gis.landuse WHERE geom
   - `!GEOM_FIELD!` - [Optional] the geom field name
   - `!GEOM_TYPE!` - [Optional] the geom type if defined otherwise ""
 
-## Reference in the map section
+## Example mvt_provider and map config
 
-When referencing the provider in the map section, one must append `mvt_` to the name. 
+When referencing the provider in the map section, one must prepend `mvt_` to the name. 
 
 Example:
 
 ```toml
+[[mvt_providers]]
+name = "test_postgis"       
+type = "postgis"            
+host = "localhost"          
+port = 5432                 
+database = "tegola"         
+user = "tegola"             
+password = ""
+
+  [[mvt_providers.layers]]
+  name = "landuse"
+  sql = "SELECT ST_AsMVTGeom(geom,!BBOX!) AS geom, gid FROM gis.landuse WHERE geom && !BBOX!"
+
 [[maps]]
-    name = "cities"
-    center = [-90.2,38.6,3.0]  # where to center of the map (lon, lat, zoom)
+name = "cities"
+center = [-90.2,38.6,3.0]  # where to center of the map (lon, lat, zoom)
 
     [[maps.layers]]
-        name = "landuse"
-        provider_layer = "mvt_test_postgis.landuse"
-        min_zoom = 0
-        max_zoom = 14
-
+    name = "landuse"
+    # note the mvt_ prefix on the name of the provider.
+    provider_layer = "mvt_test_postgis.landuse" 
+    min_zoom = 0
+    max_zoom = 14
 ```
 
 Note `test_postgis` is refered to as `mvt_test_postgis`
