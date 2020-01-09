@@ -187,6 +187,11 @@ func Maps(a *atlas.Atlas, maps []config.Map, providers map[string]provider.Tiler
 
 			// search for it in the mvt providers
 			if mvtprvd, ok := mvtProviders[providerName]; ok {
+				if len(newMap.Layers) != 0 {
+					return config.ErrMixedProviders{
+						Map: string(m.Name),
+					}
+				}
 				layerer = newMap.SetMVTProvider(providerName, mvtprvd)
 				goto ADDLAYER
 			}

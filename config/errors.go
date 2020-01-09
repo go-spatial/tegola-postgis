@@ -40,6 +40,14 @@ func (e ErrMVTDiffereProviders) Error() string {
 	)
 }
 
+type ErrMixedProviders struct {
+	Map string
+}
+
+func (e ErrMixedProviders) Error() string {
+	return fmt.Sprintf("config: can not mix MVT providers with normal providers for map %v", e.Map)
+}
+
 type ErrInvalidLayerZoom struct {
 	ProviderLayer string
 	MinZoom       bool
