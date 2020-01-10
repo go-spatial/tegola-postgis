@@ -1,5 +1,5 @@
 # PostGIS
-The PostGIS provider manages querying for tile requests against a Postgres database (version 10+) with the [PostGIS](http://postgis.net/)(version 2.4+) extension installed. The connection between tegola and Postgis is configured in a `tegola.toml` file. An example minimum connection config:
+The PostGIS provider manages querying for tile requests against a Postgres database (version 12+) with the [PostGIS](http://postgis.net/)(version 3.0+) extension installed. The connection between tegola and Postgis is configured in a `tegola.toml` file. An example minimum connection config:
 
 
 ```toml

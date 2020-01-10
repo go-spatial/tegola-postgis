@@ -15,6 +15,7 @@ import (
 
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/encoding/wkb"
+	"github.com/go-spatial/tegola-postgis"
 	"github.com/go-spatial/tegola-postgis/dict"
 	"github.com/go-spatial/tegola-postgis/proj"
 	"github.com/go-spatial/tegola-postgis/provider"
@@ -626,8 +627,11 @@ func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers [
 		}
 
 		sqls = append(sqls, fmt.Sprintf(
-			`(SELECT ST_AsMVT(q,'%s') AS data FROM ( %s ) AS q)`,
+			`(SELECT ST_AsMVT(q,'%s',%d,'%s','%s') AS data FROM ( %s ) AS q)`,
 			l.Name(),
+			tegola.DefaultExtent,
+			l.GeomFieldName(),
+			l.IDFieldName(),
 			sql,
 		))
 	}

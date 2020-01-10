@@ -1,4 +1,10 @@
-# tegola-postgis
+#tegola-postgis
+
+
+## This is an experiment to see how to integrate ST_AsMVT into Tegola. 
+
+The main feature of this fork is the addition of mvt data providers. These data providers cannot be
+conflated.
 
 [![Build Status](https://travis-ci.org/go-spatial/tegola.svg?branch=master)](https://travis-ci.org/go-spatial/tegola)
 [![Report Card](https://goreportcard.com/badge/github.com/go-spatial/tegola)](https://goreportcard.com/badge/github.com/go-spatial/tegola)
