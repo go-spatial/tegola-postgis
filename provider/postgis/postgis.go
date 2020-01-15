@@ -17,6 +17,7 @@ import (
 	"github.com/go-spatial/geom/encoding/wkb"
 	"github.com/go-spatial/tegola-postgis"
 	"github.com/go-spatial/tegola-postgis/dict"
+	"github.com/go-spatial/tegola-postgis/mvtprovider"
 	"github.com/go-spatial/tegola-postgis/proj"
 	"github.com/go-spatial/tegola-postgis/provider"
 )
@@ -603,7 +604,7 @@ func (p Provider) TileFeatures(ctx context.Context, layer string, tile provider.
 	return rows.Err()
 }
 
-func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers []string) ([]byte, error) {
+func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers []mvtprovider.Layer) ([]byte, error) {
 
 	var (
 		err  error
@@ -614,8 +615,9 @@ func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers [
 		if debug {
 			log.Printf("looking for layer: %v", layers[i])
 		}
-		l, ok := p.Layer(layers[i])
+		l, ok := p.Layer(layers[i].Name)
 		if !ok {
+			log.Printf("provider layer not found %v", layers[i].Name)
 			continue
 		}
 		if debugLayerSQL {
@@ -626,9 +628,11 @@ func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers [
 			return nil, err
 		}
 
+		// https://postgis.net/docs/ST_AsMVT.html
+		// bytea ST_AsMVT(anyelement row, text name, integer extent, text geom_name, text feature_id_name);
 		sqls = append(sqls, fmt.Sprintf(
 			`(SELECT ST_AsMVT(q,'%s',%d,'%s','%s') AS data FROM ( %s ) AS q)`,
-			l.Name(),
+			layers[i].MVTName,
 			tegola.DefaultExtent,
 			l.GeomFieldName(),
 			l.IDFieldName(),
