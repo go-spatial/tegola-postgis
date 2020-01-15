@@ -14,7 +14,7 @@ type Tiler interface {
 	provider.Layerer
 
 	// MVTForLayers will return a MVT byte array or an error for the given layer names.
-	MVTForLayers(ctx context.Context, tile provider.Tile, layers []string) ([]byte, error)
+	MVTForLayers(ctx context.Context, tile provider.Tile, layers []Layer) ([]byte, error)
 }
 
 // InitFunc initialize a provider given a config map. The init function should validate the config map, and report any errors. This is called by the For function.

@@ -159,12 +159,15 @@ func (m Map) EncodeMVTTile(ctx context.Context, tile *slippy.Tile) ([]byte, erro
 		ptile := provider.NewTile(tile.Z, tile.X, tile.Y,
 			uint(m.TileBuffer), uint(m.SRID))
 
-		layerNames := make([]string, 0, len(m.Layers))
+		mapLayers := make([]mvtprovider.Layer, 0, len(m.Layers))
 		for i := range m.Layers {
-			layerNames = append(layerNames, m.Layers[i].MVTName())
+			mapLayers = append(mapLayers, mvtprovider.Layer{
+				Name:    m.Layers[i].ProviderLayerName,
+				MVTName: m.Layers[i].MVTName(),
+			})
 		}
 
-		return m.mvtProvider.MVTForLayers(ctx, ptile, layerNames)
+		return m.mvtProvider.MVTForLayers(ctx, ptile, mapLayers)
 	}
 
 	// tile container
