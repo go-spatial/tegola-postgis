@@ -1,5 +1,9 @@
 #tegola-postgis
 
+THIS IS NOW PART OF MAIN LINE OF TEGOLA. V0.12.x branch has this support. Please, use that instead of this one.
+
+
+
 
 ## This is an experiment to see how to integrate ST_AsMVT into Tegola. 
 
